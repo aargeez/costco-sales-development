@@ -1,0 +1,11 @@
+﻿---
+description: Release readiness gates and rollback requirements
+alwaysApply: false
+---
+
+# Release Readiness
+
+- Require test, security, and performance evidence before release.
+- Require rollback plan with owner and execution steps.
+- Require monitoring and alerting readiness.
+- No production release with unresolved critical findings.

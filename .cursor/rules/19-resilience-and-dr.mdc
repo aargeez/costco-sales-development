@@ -1,0 +1,11 @@
+﻿---
+description: Resilience, disaster recovery, and business continuity controls
+alwaysApply: false
+---
+
+# Resilience and DR
+
+- Define RTO/RPO targets for critical services and data domains.
+- Validate backup, restore, and failover strategy before production rollout.
+- Include chaos or failure-injection tests for critical paths.
+- Ensure dependency fallback behavior is documented and tested.

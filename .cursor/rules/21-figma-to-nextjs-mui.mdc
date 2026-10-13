@@ -1,0 +1,65 @@
+---
+description: Figma Design System to Next.js + MUI v6 conversion governance
+globs: src/theme/**/*.{ts,tsx}, src/components/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Figma-to-NextJS + MUI v6 Conversion Rules
+
+## Styling Governance
+
+- ALL styling MUST use MUI `styled()` API or theme object overrides. No raw CSS, SCSS, Tailwind, or CSS Modules.
+- Inline `style={{}}` is forbidden except for truly dynamic computed values (e.g., `style={{ width: calculatedWidth }}`).
+- The `sx` prop is acceptable for one-off layout adjustments on MUI components; prefer `styled()` for reusable patterns.
+- Every color, spacing, shadow, and typography value MUST originate from the theme or design tokens — no hardcoded hex outside `theme/palette.ts`.
+
+## Theme Architecture
+
+- A centralized theme MUST exist at `src/theme/index.ts` using `createTheme()`.
+- Design tokens MUST be split: `palette.ts` (colors/shadows), `typography.ts` (type scale), `components.ts` (MUI overrides).
+- Theme MUST wrap the app via `ThemeProvider` in `_app.tsx` or root layout.
+- All Figma design tokens (colors, typography, spacing, elevation) MUST be mapped into the theme before component work begins.
+
+## Component Architecture
+
+- Follow atomic design: `atoms/` → `molecules/` → `organisms/` → `templates/` under `src/components/`.
+- Each component MUST be a single `.tsx` file (or `index.tsx` inside a named folder).
+- Consolidate Figma variants (hover, active, disabled, loading) into ONE functional component using TypeScript props — not separate files.
+- Every component MUST export a TypeScript `interface` or `type` for its props (named `<Component>Props`).
+- Map Figma Component Properties directly to React props: boolean toggles → boolean props, variant selectors → union type props.
+
+## State Management
+
+- Interactive components (dropdowns, modals, text inputs, toggles) MUST manage internal state via `useState`.
+- Side-effect-dependent components MUST use `useEffect` with proper cleanup.
+- Controlled component pattern preferred: accept `value` + `onChange` from parent, fall back to internal state when uncontrolled.
+
+## Prop Mapping Contract
+
+- Figma `Show Icon` toggle → `showIcon: boolean`
+- Figma `State` (Default/Hover/Active/Disabled/Loading) → handled via CSS states + `disabled` / `isLoading` props
+- Figma `Variant` (Primary/Secondary/Text) → `variant: 'contained' | 'outlined' | 'text'`
+- Figma `Size` (Small/Medium/Large) → `size: 'small' | 'medium' | 'large'`
+- Figma `Icon Position` (Left/Right/None) → `iconPosition: 'start' | 'end' | undefined`
+
+## File Organization
+
+- Barrel exports in `src/components/index.ts` re-exporting all public components.
+- Type exports in `src/types/index.ts` re-exporting all prop interfaces.
+- `'use client'` directive on every component that uses hooks or browser APIs.
+- Path alias `@/` MUST resolve to `./src/` via tsconfig.
+
+## MUI Dependency Requirements
+
+- `package.json` MUST include: `@mui/material` (v6+), `@emotion/react`, `@emotion/styled`.
+- `@mui/icons-material` when icons are used.
+- `tsconfig.json` MUST have `strict: true`.
+
+## Validation Criteria
+
+- Zero raw CSS files (`.css`, `.scss`, `.sass`, `.less`).
+- `styled()` usage count > 0 in component files.
+- Every exported component has a corresponding `Props` interface.
+- Theme file exists with `createTheme`, `palette`, `typography`, `components`.
+- `TypeScript --noEmit` passes with zero errors.
+- No `any` types in component props.

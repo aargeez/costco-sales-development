@@ -1,0 +1,36 @@
+---
+description: API validation requirements for REST and GraphQL services
+globs: **/*.{java,graphqls,properties,md},docs/quality/api-validation/**/*.md
+alwaysApply: false
+---
+
+# API Validation Baseline
+
+- Validate both protocol surfaces on each release slice:
+  - REST: `<rest-base-path>/*`
+  - GraphQL: `/graphql`
+- Cover both default and explicit DB routing behavior:
+  - REST with `<db-param-name>=<primary-db>` and `<db-param-name>=<secondary-db>` (if multi-datasource applies)
+  - GraphQL with `<db-header-name>` where applicable
+- Include positive, negative, and contract-shape checks (status code and payload fields).
+
+# Required Negative Paths
+
+- Invalid database selector must return a controlled client error (not 5xx).
+- Malformed GraphQL query must return validation/execution error payload and non-success outcome.
+- Missing required GraphQL arguments must be asserted.
+- Unsupported HTTP method on REST resources must be asserted.
+
+# Evidence and Traceability
+
+- Persist executed commands and outcomes with timestamps.
+- Record response snippets sufficient to prove contract adherence.
+- Link each validated scenario to FR-*, BR-*, OpenAPI operation, or `api_sequence_specification` step — user story AC only when story packs are the declared input.
+- Summarize unresolved gaps (including §12 Known Gaps) with owner and next action.
+
+# Security and Compliance Checks
+
+- Do not log secrets, tokens, or credentials in artifacts.
+- Mask any sensitive response fields before persistence.
+- Include at least one authn/authz note when protected APIs are introduced.
+- When APIs are protected, include executed authn/authz evidence (unauthenticated -> 401/403 and authorized -> success) in the validation artifact.

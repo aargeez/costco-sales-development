@@ -1,0 +1,99 @@
+---
+description: Calculation catalog — math-only amount formulas for ATI modules; required at ATI start
+alwaysApply: false
+---
+
+# Calculation Catalog (Math-Only)
+
+## Purpose
+
+Prevent invented **amount math**. Active catalogs hold currency/numeric results only (O/S, totals, pickups, FX, adjustments, vault deltas, inquiry Sum/A+B columns). Non-math behavior (indicators, row-set filters, eligibility gates, labels) → rule 22 provenance + validation chain — **not** active catalog.
+
+**Policy effective:** 2026-08-25. Full pre-trim extracts archived at `artifacts/archive_asset/extract-calculations/`.
+
+## Source-of-truth order (formulas)
+
+**Extract / refresh catalog** (`/extract-calculations`):
+
+1. **IBMi** — `config.yaml` → `modules.ibmi_source`
+2. **BRE / BRD** — secondary crosswalk (`bre_ids`, `fr_ids`)
+3. **Modern impl** — parity only; never invent toward Java/SQL when IBMi is silent
+
+**Consume / implement / debug:**
+
+`artifacts/calculations/<module>-calculations.json` is the **primary source** for amount math (when the file exists).
+
+Implement **every** `steps[]` row and **every** `branches[]` row (including `effect_kind=zero` / `skip` / not-found). Do not flatten a lookup to `COALESCE(missing, 0)` unless a catalog branch says the operand is zero on miss.
+
+## On error, mismatch, or conflict (catalog wins)
+
+When tests fail, displayed amounts are wrong, or sources disagree on a formula:
+
+1. **Primary:** the module calculation JSON (`CALC-*` `canonical_formula`, `steps`, `branches`, `inputs`)
+2. Align code, tests, reviews, and BRD amount wording **to the catalog**
+3. Honor `conflict_log` and pending `assumption_registry` → `BLOCKED_CONFLICT` / ask
+4. If catalog **missing, stale, or wrong** → `/extract-calculations` from IBMi
+
+## Active scope (math-only)
+
+| Include | Exclude (→ archive + rule 22) |
+|---------|-------------------------------|
+| `category`: over_short, total, fx, adjustment, pickup, vault | `category`: indicator |
+| `result.unit`: currency, ratio (fx), count with Sum/A+B formula | flag, text, row-set filters |
+| Inquiry display amounts (Sum/A+B columns) | `display_via`: query_filter row-sets |
+| | Option gates, eligibility, status labels, validation |
+
+Some modules have **no active catalog** when all extracted records were non-math (e.g. SAOD, MDT, DTM). Use archived full copy + provenance for those behaviors.
+
+## Layer ownership (`placement`)
+
+Each `calculations[]` record **must** include `placement.layer` + `placement.status`. See `scope.placement_policy`.
+
+| `placement.layer` | Owns | Typical modern site |
+|-------------------|------|---------------------|
+| `data_layer` | Shared amounts / O/S / totals / FX / adj | `postgres_function` + snapshot |
+| `api_layer` | Orchestration; may invoke recompute | `java_application` / `java_domain` |
+| `ui_layer` | Formatting only (no formula recompute) | `ui_read_only` |
+| `unclear` | Stop — no parallel formula owner | `status=pending_clarification` |
+
+- IBMi = formula source only (not an extra owner).
+- Row-set filters, eligibility, labels → validation chain + provenance (rule 22), not active catalog.
+
+## Artifact layout
+
+| Path | Role |
+|------|------|
+| `artifacts/calculations/calculation-catalog.schema.json` | Math-only JSON Schema |
+| `artifacts/calculations/<module>-calculations.json` | Active math catalog (when module has amount records) |
+| `artifacts/archive_asset/extract-calculations/` | Full pre-trim extracts, schema snapshot, audits, `non-math-records.md` |
+
+Granularity: **one `calculations[]` record per amount result** (not per code site).
+
+## When to load (mandatory)
+
+Load the module catalog **at the start** of amount-math work when the file exists:
+
+| Trigger | Action |
+|---------|--------|
+| New ATI option / menu screen work | Resolve ATI → module → load catalog if present |
+| `/generate-brd` for an ATI module | Cite `CALC-*` for amount FRs; use archive for non-math provenance |
+| `/plan-sprint` with amount FRs | Map SP items → `calculation_id` |
+| `/implement-api` / `/fix-issue` (cited-requirements, or a defect that is amount math) on O/S, totals, pickups, FX, adj, inquiry amounts | Load catalog → cite `CALC-*` |
+| `/implement-ui` amount columns | **Read-only** display — do not recompute in browser |
+
+## Shared engines (do not change formula ownership)
+
+When `modern_impl` is a SQL function or Java service used by more than one ATI, the catalog record or the change plan must cite `invocationSource` or the applicable type set, and the implementation must filter on that cite. If the catalog and BRD are silent, register `ASSUMPTION-*` and do not mark Done. Do not invent a profile or a second formula owner. This check sits inside the existing amount-math gate on `/implement-api` and `/fix-issue`.
+
+## Prohibited
+
+- New formula without IBMi `source_locator` (or approved `ASSUMPTION-*`)
+- Calling a shared O/S engine without the cited invocation profile or type set (SARS-style leakage of another ATI’s profile)
+- Happy-path-only catalog steps for CHAIN/READP lookups
+- Putting indicators, row-set filters, or eligibility in active catalog
+- Shipping `parity.status=full` with pending assumptions
+- Ignoring `conflict_log` entries
+
+## Extract / refresh
+
+Use `/extract-calculations`. Write **math-only** to active path. Document non-math findings in audit + rule 22 provenance; reference archived full extract when needed.

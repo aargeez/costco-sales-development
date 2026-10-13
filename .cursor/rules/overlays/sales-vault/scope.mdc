@@ -1,0 +1,34 @@
+---
+description: Optional Sales Vault screen and capability scope — load when the active product is Sales Vault
+alwaysApply: false
+---
+
+# Scope (Sales Vault)
+
+Screen lists are defined at **development time**. Prefer `config.yaml` → `vault.scope` and **`vault.source_of_truth`** (fallback **`modules.brd`**). Do not treat the example names below as frozen product law.
+
+## Resolve documentation pack path
+
+Read **`config.yaml`**:
+
+- **`vault.source_of_truth`** when present (example in `config.examples/sales-vault.config.yaml`: `vault-source-of-truth.md`)
+- else **`modules.brd`**
+
+Cite that resolved path in audits and traceability — not a hardcoded filename unless it matches config.
+
+## Policy
+
+- **In scope:** Sales Vault screens and capabilities listed in `vault.scope.in` (or the SoT in-scope set when config is empty).
+- **Documentation pack:** resolved SoT path above, plus data model, DDL, DFD, process flows.
+- **Delivery:** contract → backend → UI via `/implement-api` and `/implement-ui` (public spine); see `rules/11-intake-planning-governance.mdc` for steps 3–7.
+- **Out of scope:** `vault.scope.out` plus clerk/auditor-owned flows called out in SoT (example: STE; VACX/VAEX/DDE when listed).
+- User story / Gherkin packs are **not** the primary source of truth for Sales Vault API work unless the operator says otherwise.
+
+## Conflict resolution
+
+- Scope boundaries in the **resolved SoT** (typical sections §2 and §13 in the Vault pack) **win** over legacy docs and over stale examples in this file.
+
+## Example names (illustrative only — replace from config / SoT)
+
+Typical in-scope ATI-style codes: VACE, VACI, VABI, VAOD, VACO.  
+Typical out-of-scope: VACX (day reopen), VAEX (export), DDE (Sales Auditor daily deposit); STE clerk flows as reference only.

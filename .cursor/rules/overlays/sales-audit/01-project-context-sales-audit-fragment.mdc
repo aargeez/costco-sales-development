@@ -1,0 +1,36 @@
+---
+description: Optional Sales Audit product context — load when the active product is Sales Audit
+alwaysApply: false
+---
+
+# Project Context — Sales Audit
+
+Load this overlay when working on **Sales Audit** (not Sales Vault). Paths still come from `config.yaml`.
+
+Monorepo for Sales Audit replatforming (example ATI modules: SARO / SASI — confirm names in `config.yaml`).
+
+## What This Repo Contains (typical Audit layout)
+
+- **API** (`config.yaml` → `modules.api`): discrepancy/pickup and session/summary flows, validation chain, JDBC/JPA persistence
+- **UI** (`config.yaml` → `modules.ui`): warehouse audit screens (MUI + Next.js), Vitest + Playwright E2E
+- **BRD** (`config.yaml` → `modules.brd`): business reference — use `/generate-brd` for new drafts; do not overwrite approved BRD without user consent
+- **IBMi replica** (`config.yaml` → `modules.ibmi_source`): extract source for **calculation** math (`/extract-calculations`)
+- **Calculation catalogs** (`config.yaml` → `artifacts.calculations_module`): **math-only** primary source for amount math. Full pre-trim extracts archived at `artifacts/archive_asset/extract-calculations/`. Non-math → rule 22 provenance.
+- **Intake / sprints** (`artifacts/intake/`, `artifacts/brd/`, `artifacts/sprints/`): pipeline artifacts — see `.cursor/PIPELINE.md`
+- **OpenAPI** (`config.yaml` → `modules.openapi`): contract source of truth per sprint slice
+
+## Principles
+
+- Preserve BRD business intent in code and tests
+- Config-driven reference data — not hardcoded business lists
+- Schema changes via Flyway only; align JPA entities and JDBC repositories
+- Behavior provenance required — see `.cursor/rules/22-behavior-provenance-and-anti-invention.mdc`
+- Amount formulas cite calculation catalog `CALC-*` IDs; catalog JSON wins on amount errors — see `.cursor/rules/32-calculation-catalog.mdc`
+
+## ATI menu start
+
+For a new or math-heavy ATI option: `/extract-calculations` (if catalog missing/stale) → `/generate-brd` → `/plan-sprint` → deliver.
+
+## When Unclear
+
+Ask the user — do not invent requirements not in BRD, `docs/feature.md`, calculation catalog, or existing code.

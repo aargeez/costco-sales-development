@@ -1,0 +1,18 @@
+﻿---
+description: Data migration integrity and reconciliation guardrails
+alwaysApply: false
+---
+
+# Data Migration Integrity
+
+- Every source-to-target mapping must be traceable.
+- Define cleansing, defaulting, and transformation rules explicitly.
+- Add reconciliation checkpoints and acceptance thresholds.
+- Document cutover sequence and rollback strategy.
+
+# Versioned migration scripts (forward-only baseline)
+
+- **Inventory first:** Before generating new DDL, scan existing repo migration SQL (default `migrations/**/*.sql` or team-declared paths) and treat the union of created objects as the **deployed baseline** for diffing.
+- **Additive changes:** Net-new tables or columns required by target DDL or user stories must be delivered as **new** migration files (forward-only). Prefer `ALTER TABLE … ADD` / new indexes when the table already exists in baseline; do not rewrite or delete historical migration files to “fix” schema.
+- **Non-destructive default:** Do **not** author `DROP TABLE`, `DROP COLUMN`, `TRUNCATE`, or other destructive DDL unless a **user story or formally accepted epic** explicitly mandates removal/retirement and the change record cites **story ID + quoted acceptance text**. Otherwise escalate to product/architecture.
+- **Drift handling:** If live databases diverge from repo migrations, document drift in reconciliation artifacts and resolve through an approved process — not silent drops in generated scripts.

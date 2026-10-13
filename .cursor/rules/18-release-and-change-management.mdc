@@ -1,0 +1,11 @@
+﻿---
+description: Release governance, phased rollout, and change management
+alwaysApply: false
+---
+
+# Release and Change Management
+
+- Use phased rollout for high-risk capabilities (canary, ring, or cohort).
+- Define explicit go/no-go criteria and rollback triggers.
+- Ensure change communications and stakeholder sign-offs are complete.
+- Freeze risky changes during cutover windows unless exception approved.

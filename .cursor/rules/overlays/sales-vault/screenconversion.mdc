@@ -1,0 +1,30 @@
+---
+description: Optional Sales Vault AS400-to-Next.js screen conversion — applies when vault-nextjs files are in scope
+alwaysApply: false
+globs: vault-nextjs/**/*
+---
+
+# Screen conversion (Sales Vault)
+
+Generic Next.js / MUI standards live in `.cursor/rules/04-frontend-nextjs.mdc` and `.cursor/rules/21-figma-to-nextjs-mui.mdc`. This overlay is **Vault screen mapping and wiring only**.
+
+## Source of UI behavior
+
+- Derive screens from the **resolved SoT** (`config.yaml` → `vault.source_of_truth` or `modules.brd`; typical pack §8 screens), `screenRequirements.ts`, and approved API contracts — not user stories as primary SoT.
+- Design tokens / MUI theme: rule 21 and `/figma-to-nextjs`. Do not hardcode a local design-system checkout path.
+
+## Screen mapping
+
+- One-to-one from green AS400 programs to re-imagined screens under `config.yaml` → `modules.ui` (typically `src/screens/`).
+- Traceability: `src/lib/traceability/screenRequirements.ts` (legacy program, route, required fields, function keys, session deps) unless `config.yaml` → `vault.screenconversion.traceability` overrides.
+
+## API wiring
+
+- Centralize API clients in `src/lib/api/` (`client.ts`, `types.ts`); support mock and HTTP modes via `NEXT_PUBLIC_VAULT_API_MODE` (or `vault.screenconversion.api_mode_env`).
+- Wire screens via `/implement-ui` (frontend-agent wiring gate) in dependency order (warehouse → sales date → register/pickup → detail screens).
+- Field bindings must cite OpenAPI property + `screenRequirements` row + field-traceability when applicable.
+- When a screen has Back or cross-screen handoff, session deps from `screenRequirements.ts` that the screen already carries on the URL must appear on `returnQs` under the same key names (rule 04 + `ati-navigation-checklist.md` **returnQs shape**).
+
+## Quality
+
+- Add component and journey tests for critical paths (`journeys/`, `screenRequirements.test.tsx`).

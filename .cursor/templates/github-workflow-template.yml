@@ -1,0 +1,51 @@
+# GitHub Actions workflow skeleton — customize name, on:, jobs, and permissions.
+# Replace placeholder JOB_ID and add real steps. Remove comments not needed by your team.
+
+name: WORKFLOW_DISPLAY_NAME
+
+# Optional: human-readable run title in the Actions UI
+# run-name: "${{ github.workflow }} — ${{ github.ref_name }}"
+
+on:
+  workflow_dispatch:
+    # inputs:
+    #   environment:
+    #     description: "Target environment"
+    #     required: true
+    #     type: choice
+    #     options: [ dev, staging, prod ]
+  # push:
+  #   branches: [ main ]
+  # pull_request:
+  #   branches: [ main ]
+
+# Optional: cancel older runs on the same branch
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.ref }}
+#   cancel-in-progress: true
+
+permissions:
+  contents: read
+  # Add only what jobs need, e.g.:
+  # id-token: write   # OIDC to cloud providers
+  # pull-requests: read
+
+jobs:
+  JOB_ID:
+    name: Human readable job name
+    runs-on: ubuntu-latest
+    # environment: staging   # optional: use for protection rules / secrets scoped to env
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Example placeholder step — replace with build/test/deploy
+      - name: Placeholder
+        run: echo "Define your build/test commands here"
+
+      # Secrets example (never put values inline — define in repo or environment settings):
+      # - name: Example using a secret
+      #   env:
+      #     API_TOKEN: ${{ secrets.API_TOKEN }}
+      #   run: ./script.sh

@@ -1,0 +1,40 @@
+﻿---
+description: Optional Sales Vault replatforming context — load when the active product is Sales Vault
+alwaysApply: false
+---
+
+# Project Context
+
+Load this overlay **only** when the active product is Sales Vault. Also load `rules/overlays/sales-vault/scope.mdc`. In/out-of-scope screen codes come from `config.yaml` → `vault.scope` and `vault.source_of_truth`.
+
+- Legacy source: AS400 Vault workloads (codes from `vault.scope.in`, historically VACE / VACI / VABI / VAOD / VACO).
+- Target platform: GCP cloud-native ecosystem with PostgreSQL (`sales-vault-ddl/`) and Next.js (`vault-nextjs/`).
+- Transformation goal: simplify and modernize, not lift-and-shift.
+- Consolidated AS-IS truth: path from `config.yaml` → `vault.source_of_truth` or `modules.brd` (example default in `config.examples/sales-vault.config.yaml`: `vault-source-of-truth.md` — process flows, BR-*, FR-*, screens).
+
+# Phase Workflow
+
+**Seven delivery steps** (same as Audit — see `rules/11-intake-planning-governance.mdc` and [PIPELINE.md](../../../PIPELINE.md)) after sprint plan **Approved**:
+
+1. `/implement-api` — api-agent contract verify/sync, schema migrations, Spring Boot slice + tests
+2. `/implement-ui` — Next.js slice + FE↔BE wiring gate
+3. `/expand-test-coverage` → human test-package **Approved**
+4. `/run-tests`
+5. `/run-eval`
+6. `/review-changes`
+7. `/application-summary`
+
+**Vault satellites** (not spine steps — run when the slice or contract needs them): `/validate-api-endpoints`, `/compliance-check`, `/figma-to-nextjs`, `/plan-governed-stories`, etc.
+
+**General replatforming (when story packs exist):**
+
+- Reverse engineering extracts business rules from legacy logic.
+- Business rules become INVEST-compliant Gherkin stories.
+- Forward engineering aligns stories, UX flows, and target data model.
+
+# Decision Principles
+
+- Preserve business intent while removing legacy constraints.
+- Challenge redundant steps and duplicated logic.
+- Treat unclear legacy behavior and §12 Known Gaps as risk; flag for SME review.
+- Do not invent behavior when documentation is silent — use `ASSUMPTION-<id>` protocol.

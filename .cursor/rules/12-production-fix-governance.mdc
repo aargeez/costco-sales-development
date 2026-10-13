@@ -1,0 +1,59 @@
+﻿---
+description: Production-grade fix governance for /fix-issue — no workarounds, no reinvention
+alwaysApply: true
+---
+
+# Production Fix Governance
+
+Applies to `/fix-issue` **defect** mode, **backend-agent** (fix mode), **frontend-agent** (fix mode), and any ad-hoc bug or gap work outside approved sprint delivery. Cited incremental diffs use `/fix-issue` **cited-requirements** mode (change-agent, change plan, rule 22 / rule 32). That mode does not use this proceed gate unless the change plan is ambiguous.
+
+## Do
+
+- **Understand first:** reproduce or trace the issue in code, tests, logs, BRD, and OpenAPI before changing anything.
+- **Reuse:** extend existing controllers, services, components, validators, hooks, and patterns — do not duplicate parallel implementations.
+- **Minimal diff:** smallest change that fully satisfies the requirement and matches repo conventions.
+- **Production-grade:** proper validation, error handling (`ApiResponse` / `GlobalExceptionHandler`), logging (MDC), transactions on writes, Flyway for schema, contract alignment for API changes.
+- **Trace:** cite BRD rule ID, OpenAPI operation, or `docs/feature.md` when applicable; register DQ-xxx if BRD is silent.
+- **Test:** add or update unit tests for the fix; run full module regression (`mvn test` / `npm test`); run E2E when a user-facing journey changed.
+- **Document:** complete `artifacts/issues/<date>-<slug>.md` and audit per `10-audit-trail.mdc`.
+
+## Don't
+
+- Ship workarounds, temporary feature flags to hide bugs, commented-out code, or "fix later" TODOs.
+- Edit **applied** Flyway migrations — add a new `V<nnn>__<slug>.sql` instead.
+- Change BRD business meaning without human confirmation.
+- Skip regression tests because the change "looks small."
+- Invent requirements — ask the human when unclear.
+- Reinvent abstractions that already exist in `config.yaml` → `modules.api` or `modules.ui`.
+
+## Human gates (hard stop)
+
+1. **Requirements ambiguous** → ask structured questions; do not implement.
+2. **Fix plan written** (defect mode) → wait for explicit human **proceed** before Phase 2 (see `/fix-issue` defect).
+3. **Breaking API or schema** → confirm before implement.
+4. **BRD interpretation change** → confirm with domain reviewer before implement.
+
+## Issue log (required)
+
+Every `/fix-issue` **defect** run must produce or update:
+
+`artifacts/issues/<YYYY-MM-DD>-<slug>.md`
+
+Sections: issue description, root cause, impact, fix plan, implementation summary, test evidence, outcome, sibling scan.
+
+## Sibling scan (defect closeout)
+
+Before the issue log is complete, search other ATIs for the same anti-pattern and record the result. Do not edit those modules in this command. Labels:
+
+- contract alias (OpenAPI name vs client name)
+- nav / bypass / `returnQs`
+- layout / criteria column drift
+- shared molecule / pagination drift
+- uncited session defaults / defaults on load
+- Option column
+- seed clobber
+- IT restore missing on shared tables
+- screen test without the module’s themed render helper
+- shared O/S profile filter missing
+
+This is a section of the existing issue log, not a new phase or command.

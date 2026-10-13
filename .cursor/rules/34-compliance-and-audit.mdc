@@ -1,0 +1,16 @@
+---
+description: Compliance, auditability, and evidence controls
+alwaysApply: false
+---
+
+# Compliance and Audit
+
+- Keep full traceability from requirement to production evidence.
+- Tag PII-sensitive flows and apply masking and access controls.
+- Capture approval evidence for architecture, security, and release gates.
+- Store immutable decision logs for major trade-offs.
+
+# Evidence Requirements
+
+- Every release must include test, security, and operational evidence bundle.
+- Retain migration reconciliation reports per cutover phase.

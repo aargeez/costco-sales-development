@@ -1,0 +1,17 @@
+---
+description: Fill project name, modules, and glossary from config.yaml
+alwaysApply: true
+---
+
+# Project Context
+
+- Read `.cursor/config.yaml` for module roots (`modules.api`, `modules.ui`, `modules.openapi`, `modules.brd`), harness paths, quality gates, and `evals.*`.
+- Do not assume a specific Sales product, ATI option, or repository folder name. Bind paths from config (or `config.examples/` when copying this factory into a product repo).
+- If `config.yaml` still contains placeholders (`<project-name>`, `<vault-api>`, `<vault-ui>`), stop and ask the operator to fill it before generating product code.
+- Amount math: when `artifacts.calculations` / `artifacts.calculations_module` are set, load the module catalog and cite `CALC-*`. Catalog JSON wins on amount errors — see `.cursor/rules/32-calculation-catalog.mdc`. IBMi extract source is `config.yaml` → `modules.ibmi_source` when present.
+- Product-specific narrative (Sales Audit modules, Sales Vault replatform screens, GCP, AS400 mapping) lives in `rules/overlays/` and is **not** always-on. Load the matching overlay when the active product is Audit or Vault.
+- Preserve BRD / story / contract intent in code and tests. Do not invent requirements not in `modules.brd`, `docs/feature.md`, the calculation catalog, or existing code.
+
+## When Unclear
+
+Ask the operator — register `ASSUMPTION-<id>` or Open DQ. Do not invent domain behavior.

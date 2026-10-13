@@ -1,0 +1,22 @@
+---
+description: Next.js UI defaults
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Frontend — Next.js
+
+- Prefer App Router conventions of the target module in `config.yaml`.
+- Loading, empty, and error states required for every user journey.
+- No hardcoded user-visible strings when the project uses i18n.
+- Typed API client from OpenAPI; do not invent field semantics.
+- Do not silently rename OpenAPI query parameter names or JSON property names in the client, hooks, or BFF (for example `from` vs `fromDate`, `rows` vs `lines`, `overShort` vs `overShortAmount`). The wiring gate still runs inside `/implement-ui`; this is a name check on that same gate, not a new command.
+- FE↔BE wiring is a required gate of `/implement-ui`, not a separate public command.
+- Load `.cursor/skills/ati-navigation-state/SKILL.md` when implementing or fixing Back, handoff, or entry/search restore. Entry screens must gate session prefill on `hasRestorable*` (or equivalent) so async loads do not overwrite URL criteria.
+- Load `.cursor/skills/ati-session-defaults/SKILL.md` when implementing or fixing entry, search/criteria, or session fields. **Lookups** (dropdown options) may load on mount; **session defaults** (dates, loc grp, checkboxes, thresholds, `get*Defaults` fields, non-empty `useState` seeds) require an approved Plan or BRD cite per field. Complete `.cursor/templates/audit-ui-session-defaults-checklist.md` on `/implement-ui` and `/fix-issue` when entry/search UI is in scope.
+- Load `.cursor/skills/audit-ui-layout/SKILL.md` when implementing or fixing entry, search/criteria, or session filter UI. Session flow is column-first (`maxWidth: 720`); filters and checkboxes belong **below** dates—not in a side column at `md+`. Cite BRD/ATI/mockup before any layout deviation; fill `.cursor/templates/audit-ui-layout-checklist.md` in the command audit.
+- When a screen has back-stack or cross-screen handoff, `returnQs` must carry the **full cited set**: session keys, selected row or record id, and any filters or inputs the source already puts on the URL (BRD, feature note, `screenRequirements` session deps, or the module’s existing `*ReturnTo`). Reuse the module’s `*ReturnTo` / `withSelected` helpers; do not strip keys inside those helpers. Bypass (skip restore and jump) only when a cited `invocationSource` (catalog or BRD) is **present and non-empty**; otherwise restore from `returnQs`. Do not invent a destination route; an uncited target is an Open DQ. Query keys that are also OpenAPI params must keep OpenAPI names (same gate as the name check above). List fetch must not depend on the selection URL unless the cited screen already does that. Fill `.cursor/templates/ati-navigation-checklist.md` inside the existing `/implement-ui` audit, including each kept `returnQs` key and its cite.
+- Do not add a green-screen Option column for row selection. Use the module’s existing selectable-row pattern.
+- Layout and wrap props go through `sx` on the MUI component that owns them. Do not pass `flexWrap`, `inputProps`, or other layout props onto a DOM node that does not accept them.
+- New screen tests use the module’s existing themed render helper. Call it `renderAudit` only when that function already exists in the UI module. Do not create a second helper in the factory. A missing helper is infra debt on the existing `/expand-test-coverage` audit, not a new command.
+- Shared molecules under `src/components/**` use **component** prop names, not API/DTO field names. Map paginated API totals at the screen boundary (e.g. response `totalCount` → molecule `count`). MUI pagination handlers are two-arg: `onPageChange(event, newPage)` and `onRowsPerPageChange(event)`. Load `.cursor/skills/shared-ui-molecules/SKILL.md` when list/results tables or pagination change; complete § Molecule validate on `/implement-ui` and `/fix-issue` when list UI is in scope.

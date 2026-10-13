@@ -1,0 +1,23 @@
+﻿---
+description: Documentation and traceability requirements
+globs: **/*.{md,mdx}
+alwaysApply: false
+---
+
+# Documentation Requirements
+
+- **Sales Vault:** map every capability to FR-*, BR-*, workflow step, screen option, API operation, and test case — not user story IDs.
+- **General:** map features to user story IDs and acceptance criteria when story packs are the declared input.
+- Capture assumptions (`ASSUMPTION-<id>`), out-of-scope items, and unresolved risks (including §12 Known Gaps).
+- Keep architecture decisions in ADR format.
+
+# Traceability
+
+- Link **business rule → API → data entity → implementation → test case**.
+- Sales Vault chain: `BR-*` / `FR-*` → OpenAPI `operationId` → DDL table → controller/service → `client.ts` adapter → journey test.
+- Include migration mapping references from `field-traceability.md` for affected entities.
+
+# Definition of Done
+
+- Docs updated with behavior, ops notes, and rollback guidance.
+- Traceability matrix populated per `.cursor/templates/traceability-matrix-template.md`.

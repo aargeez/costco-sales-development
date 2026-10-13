@@ -1,0 +1,17 @@
+# Portable manifest for shared-ui-molecules SKILL (Molecule validate + sibling scan).
+# Point quality_gates.ui_shared_component_manifest in .cursor/config.yaml to this file.
+
+components:
+  AuditTablePagination:
+    import_path_pattern: "**/AuditTablePagination"
+    required_jsx_props:
+      - count
+      - page
+      - pageSize
+      - onPageChange
+      - onRowsPerPageChange
+    forbidden_jsx_props:
+      - totalCount
+    notes: >
+      Map paginated API totalCount (or equivalent) to count at the screen boundary.
+      MUI onPageChange is (event, newPage). Prefer useTablePagination for client-side lists.

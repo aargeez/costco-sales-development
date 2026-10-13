@@ -1,0 +1,22 @@
+---
+description: Terraform and GCP infrastructure delivery guardrails
+globs: infra/**/*.tf
+alwaysApply: false
+---
+
+# Terraform Standards
+
+- Modularize by domain capability and environment.
+- Pin provider versions and document upgrade strategy.
+- Prefer reusable modules over copy-paste resources.
+
+# GCP Standards
+
+- Use least-privilege IAM and explicit service boundaries.
+- Enable monitoring, alerting, and structured logs by default.
+- Keep network topology explicit (VPC, subnet, ingress, egress).
+
+# Delivery
+
+- Run format, validate, and plan checks before merge.
+- Keep state strategy and drift handling documented.

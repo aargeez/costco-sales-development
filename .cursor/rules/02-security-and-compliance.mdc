@@ -1,0 +1,23 @@
+﻿---
+description: Security baseline for application, APIs, and infrastructure
+alwaysApply: true
+---
+
+# Security Baseline
+
+- Follow OWASP Top 10 controls and secure-by-default patterns.
+- Never hardcode secrets, keys, tokens, or credentials.
+- Validate and sanitize all external inputs.
+- Apply least privilege to service accounts and IAM roles.
+
+# Required Checks
+
+- Dependency and SAST scanning before merge.
+- Threat model updates for new high-risk flows.
+- Authentication and authorization coverage for all protected APIs.
+- Audit logging for sensitive actions and admin operations.
+
+# Data Protection
+
+- Encrypt data in transit and at rest.
+- Mask PII in logs, traces, and test artifacts.

@@ -1,0 +1,11 @@
+﻿---
+description: Business analysis and INVEST quality enforcement
+alwaysApply: false
+---
+
+# Business Analysis Quality
+
+- Every user story must pass INVEST checks.
+- Acceptance criteria must be testable and unambiguous.
+- Dependencies and assumptions must be explicit.
+- Gherkin scenarios must include happy and negative paths.

@@ -1,0 +1,59 @@
+---
+description: Human gates for BRD intake, sprint planning, and execution handoff
+alwaysApply: false
+globs:
+  - "artifacts/brd/**"
+  - "artifacts/intake/**"
+  - "artifacts/sprints/**"
+  - "artifacts/calculations/**"
+  - ".cursor/commands/extract-calculations.md"
+  - ".cursor/commands/generate-brd.md"
+  - ".cursor/commands/plan-sprint.md"
+  - ".cursor/commands/deliver-sprint.md"
+---
+
+# Intake & Sprint Governance
+
+## Pipeline
+
+```
+ATI start (amounts)  →  /extract-calculations  →  artifacts/calculations/<module>-calculations.json
+Transcript + docs (+ calc catalog)  →  /generate-brd  →  [Human: domain review]
+       →  /plan-sprint  →  [Human: sprint approval]
+       →  Seven delivery steps (Option A individually or Option B /deliver-sprint — see PIPELINE.md, EXECUTION-OPTIONS.md):
+            1. /implement-api  2. /implement-ui  3. /expand-test-coverage → [Human: test-package Approved]
+            4. /run-tests  5. /run-eval  6. /review-changes  7. /application-summary
+```
+
+## Human Gates (Required)
+
+| Stage | Gate | Agent must |
+|-------|------|------------|
+| Calc catalog (blocking ASSUMPTION/CONFLICT) | SME | Do not claim formula parity `full` |
+| BRD draft | Domain / PO review | Stop; set status **Draft — Pending Domain Review** |
+| Sprint plan | Team / architect approval | Stop; set status **Proposed — Pending Approval** |
+| Execution | Approved sprint only | Refuse `/deliver-sprint` and implement-* batch if plan not **Approved** |
+| Test package | Human approval | `/expand-test-coverage` writes `docs/quality/test-package-review.md` as **Pending Approval**; refuse `/run-tests` (and `/deliver-sprint` resume) until **Approved** or dated waiver in `docs/harness/decisions.md` — agents cannot self-approve |
+| Ad-hoc fixes | Human proceed | `/fix-issue` **defect** waits for explicit human **proceed** on the fix plan before implementation; ad-hoc bugs are not sprint SP items — do not route through `/deliver-sprint` |
+| Cited incremental change | Change plan first | `/fix-issue` **cited-requirements** writes the change plan before code; human confirm only when scope or the catalog is ambiguous |
+| BRD interpretation change | PO sign-off | Escalate; do not silently change meaning in code |
+
+## Do
+
+- Cite transcript speaker or document section for every new requirement
+- Cite `CALC-*` from module calculation catalog for amount FRs
+- On amount errors or source mismatch, **`<module>-calculations.json` is primary** (rule 32); do not “fix” the catalog toward Java/SQL/BRE
+- Flag conflicts as DQ-xxx — never silently merge contradictory sources
+- Version BRD on material change (`Version` header increment)
+- Map sprint items to FR/BR IDs and execution commands
+
+## Don't
+
+- Skip intake because "we already have code"
+- Auto-run `/deliver-sprint` after `/generate-brd`
+- Lower test gates to close a sprint item
+- Invent requirements **or amount formulas** to complete a BRD section
+
+## Artifact Paths
+
+See `config.yaml` → `intake`, `brd_drafts`, `sprints`, `artifacts.calculations`

@@ -1,0 +1,17 @@
+merge: sales-audit + sales-vault
+reference_only: .cursor
+output: .cursor master sales
+structure:
+  agents: categorized agents/<area>/*.md; orchestrator-agent.md at agents/ root
+  subagents: categorized subagents/<area>/*.md; one basename per specialist
+sources:
+  audit: .cursor audit
+  vault: .cursor vault
+rules:
+  agents: api-agent from vault at agents/api/; fix agents absorbed into backend/frontend fix mode
+  commands: audit spine + vault non-legacy union; master gap-fill; vault-legacy optional folder removed (public spine only)
+  hooks_skills: port from master when both sources lacked
+  calculation_rule: audit 24 -> 32-calculation-catalog.mdc
+  reverse_engineering_rule: 12-reverse -> 33-reverse-engineering-quality.mdc (avoid 12 prefix clash with production-fix)
+  vault_domain_rules: rules/overlays/sales-vault/ (screenconversion, scope, replatforming, gcp infra)
+  rule_dedupe: removed duplicate 10/11/16/18/20/21/25/30 prefixes; canonical numbers in rules/*.mdc

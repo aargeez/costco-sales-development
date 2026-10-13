@@ -1,0 +1,48 @@
+---
+description: Mandatory audit trail for every agent and subagent run
+alwaysApply: true
+---
+
+# Audit Trail Requirement
+
+Every agent and subagent **must** write an audit markdown file when completing (or escalating) work.
+
+## Path
+
+`artifacts/audit/<YYYY-MM-DD>-<agent-slug>-<task-slug>.md`
+
+## Required Sections
+
+1. **What** — Artifacts created or modified (paths)
+2. **Why** — Business/technical rationale tied to story, BRD rule, or command objective
+3. **How** — Approach, subagents used, rules/templates/skills applied, iteration count
+4. **Validation** — Tests run, coverage, checklist results
+5. **Open Items** — Assumptions, escalations, human gates pending
+6. **Next command** — Recommended slash command for the user (from command file § Next command)
+
+## User-facing completion message
+
+When finishing work for the user (not only the audit file), **always** include:
+
+```
+✅ /<command> complete.
+
+**Next command:** /<next-command>
+<one-line reason or human gate if applicable>
+
+Example:
+/<next-command>
+<paste-ready prompt args>
+```
+
+## Do
+
+- Timestamp and iteration count in metadata header
+- Link to BRD rule IDs or story IDs when applicable
+- Record validation command output summaries (pass/fail counts)
+
+## Don't
+
+- Skip audit because "change was small"
+- Omit failed validation attempts before refinement
+- Include secrets, tokens, or PII in audit files

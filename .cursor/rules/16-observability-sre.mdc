@@ -1,0 +1,16 @@
+﻿---
+description: SRE observability and operational readiness baseline
+alwaysApply: false
+---
+
+# Observability and SRE Baseline
+
+- Define service SLI/SLO targets before implementation starts.
+- Instrument logs, metrics, and traces with correlation IDs.
+- Add dashboards and alerts for golden signals (latency, traffic, errors, saturation).
+- Include operational runbook for top failure scenarios.
+
+# Incident Readiness
+
+- Define on-call ownership and escalation policy.
+- Include rollback and mitigation steps for critical alerts.

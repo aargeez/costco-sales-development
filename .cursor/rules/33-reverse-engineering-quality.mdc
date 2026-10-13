@@ -1,0 +1,26 @@
+---
+description: Reverse engineering quality controls for legacy interpretation
+alwaysApply: false
+---
+
+# Reverse Engineering Quality
+
+- Preserve original business intent while modernizing workflow.
+- Mark uncertain logic explicitly for SME confirmation.
+- Capture edge cases and failure paths with source references.
+- Do not infer behavior without evidence from artifacts.
+
+## Calculations (ATI)
+
+- Prefer IBMi members under `modules.ibmi_source` over BRE prose when extracting **formulas**.
+- Persist business-result math in `artifacts/calculations/<module>-calculations.json` (rule 32).
+- After extract: that JSON is the **primary source** for amount errors/conflicts in BRD, code, and tests.
+- Do not invent O/S, total, FX, or pickup math during BRD authoring — extract or cite `CALC-*` first.
+- BRE vs IBMi mismatches → `conflict_log` / DQ-xxx; never silent merge.
+
+## Inquiry / empty screens (ATI)
+
+- For an empty legacy inquiry: name the **row-driver** file from BRE Tables used / IBMi (the Input used to **select the list**).
+- Do not conclude "no sample data" until that driver file is empty for the warehouse/date (or equivalent key).
+- Do not populate a child/adjustment file to fake lines; optional joins left-join (blank/zero amount, row remains).
+- BRD inquiry FRs must state driver, optional joins, and empty condition (brd-template §7.6). Do not collapse Present Logic into one vague FR.

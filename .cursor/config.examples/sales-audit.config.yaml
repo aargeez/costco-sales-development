@@ -1,0 +1,73 @@
+# Module paths, artifact outputs, and quality gates.
+# Templates in .cursor/templates/ mirror existing docs/ and artifacts/ formats.
+
+modules:
+  api: sales-audit-api
+  ui: sales-audit-nextjs
+  openapi: contracts/openapi-saws-sprint-saws-01-v1.yaml
+  openapi_sata: contracts/openapi-sata-sprint-sata-01-v1.yaml
+  brd: artifacts/brd/saws-BRD-draft.md
+  ibmi_source: ibmi-source-code-replica-main/IBMi-Code-Base
+  calculations_schema: artifacts/calculations/calculation-catalog.schema.json
+
+intake:
+  transcripts: artifacts/intake/transcripts/
+  notes: artifacts/intake/
+  supporting_docs: artifacts/intake/supporting/
+
+brd_drafts: artifacts/brd/
+sprints: artifacts/sprints/
+
+docs:
+  feature_notes: docs/feature.md
+  test_matrix: docs/test-matrix.md
+  adr: docs/adr/
+  harness_progress: docs/harness/progress.md
+
+artifacts:
+  audit: artifacts/audit/
+  issue_logs: artifacts/issues/
+  archive_asset: artifacts/archive_asset/
+  extract_calculations_archive: artifacts/archive_asset/extract-calculations/
+  application_summary_html: artifacts/sales-audit-application-summary.html
+  application_summary_pdf: artifacts/sales-audit-application-summary.pdf
+  provenance: artifacts/sprints/{sprint-id}-provenance.md
+  test_strategy: artifacts/sprints/{sprint-id}-test-strategy.md
+  api_contract_checklist: artifacts/sprints/{sprint-id}-api-contract.md
+  test_results: artifacts/test-results-{date}.md
+  e2e_test_results: artifacts/e2e-test-results-{timestamp}.md
+  diagrams: artifacts/diagrams/
+  calculations: artifacts/calculations/
+  calculations_module: artifacts/calculations/{module}-calculations.json
+
+quality_gates:
+  api_unit_line_coverage_min: 0.70
+  api_unit_branch_coverage_target: 0.70
+  java_home_for_tests: /opt/homebrew/Cellar/openjdk@17/17.0.19/libexec/openjdk.jdk/Contents/Home
+  ui_shared_component_manifest: .cursor/templates/ui-shared-component-manifest.yaml
+  ui_session_defaults_skill: .cursor/skills/ati-session-defaults/SKILL.md
+
+execution:
+  max_iterations: 3
+
+pipeline:
+  # ATI menu start: extract-calculations (if catalog missing/stale) → generate-brd → plan → deliver
+  ati_start_command: extract-calculations
+  intake_command: generate-brd
+  plan_command: plan-sprint
+  deliver_command: deliver-sprint
+  fix_command: fix-issue
+
+evals:
+  root: evals
+  rule_source: artifacts/brd/saws-BRD-draft.md
+  rule_id_pattern: 'FR-[0-9]+[a-z]?|BR-[0-9]+|CALC-[A-Z0-9-]+|INT-[0-9]+'
+  module_brds_glob: artifacts/brd/*-BRD-draft.md
+  test_commands:
+    api: cd sales-audit-api && mvn test
+    ui: cd sales-audit-nextjs && npm test
+    e2e: cd sales-audit-nextjs && npm run test:e2e
+  owning_paths:
+    api: sales-audit-api/**
+    ui: sales-audit-nextjs/**
+    contract: contracts/**
